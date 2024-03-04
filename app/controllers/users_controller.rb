@@ -1,20 +1,31 @@
-class UsersController < ApplicationController
-  def create
-    @user = User.new(user_params)
+# frozen_string_literal: true
 
-    if @user.valid?
-      @user.save
-      @payload = { user: @user.id }
-      @token = JWT.encode(@payload, 'okcool', 'HS256')
-      render json: { user: @user, token: @token }
-    else
-      render json: @user.errors.full_messages
-    end
+class UsersController < ApplicationController
+  rescue_from ActiveRecord::RecordInvalid, with: :handle_invalid_record
+  skip_before_action :authorized, only: [:create]
+
+  def create
+    user = User.create!(user_params)
+
+    @token = encode_token(user_id: user.id)
+
+    render json: {
+      user: UserSerializer.new(user),
+      token: @token
+    }, status: :created
+  end
+
+  def person
+    render json: current_user, status: :ok
   end
 
   private
 
   def user_params
-    params.require(:user).permit(:email, :password_digest)
+    params.permit(:email, :password, :name)
+  end
+
+  def handle_invalid_record(e)
+    render json: { errors: e.record.errors.full_messages }, status: :unprocessable_entity
   end
 end
