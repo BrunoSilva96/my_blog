@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
@@ -22,6 +24,7 @@ gem 'puma', '~> 5.0'
 # gem "kredis"
 
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
+gem 'active_model_serializers', '~> 0.10.12'
 gem 'bcrypt', '~> 3.1.7'
 gem 'jwt'
 
@@ -35,7 +38,7 @@ gem 'bootsnap', require: false
 # gem "image_processing", "~> 1.2"
 
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
-# gem "rack-cors"
+gem 'rack-cors'
 
 group :development, :test do
   gem 'factory_bot_rails'
