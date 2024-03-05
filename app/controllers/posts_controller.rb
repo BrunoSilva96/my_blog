@@ -4,22 +4,31 @@ class PostsController < ApplicationController
   before_action :set_post, only: %i[show update destroy]
 
   def index
-    @posts = Post.all
-    render json: @posts
+    @posts = Post.includes(:comments, :user).order(created_at: :desc)
+
+    render json: {
+      Posts: @posts.map { |post| format_post_for_show(post) }
+
+    }, status: :created
   end
 
   def show
-    return unless @post.comment
+    return unless @post
 
-    render json: { post: @post, comment: @post.comment }
+    render json: {
+      Post: format_comments_for_post(@post)
+    }
   end
 
   def create
-    @post = Post.new(post_params)
+    @post = Post.new(post_params.merge(user_id: current_user&.id))
 
     return unless @post.save
 
-    render json: @post
+    render json: {
+      Author: current_user.name,
+      Post: PostSerializer.new(@post)
+    }, status: :created
   end
 
   def update
@@ -44,5 +53,29 @@ class PostsController < ApplicationController
 
   def post_params
     params.require(:post).permit(:text)
+  end
+
+  def format_post_for_show(post)
+    {
+      id: post.id,
+      author: post.user.name,
+      text: post.text,
+      comments: post.comments.count
+    }
+  end
+
+  def format_comments_for_post(post)
+    {
+      author: post.user.name,
+      text: post.text,
+      comments: post.comments.map { |comment| format_comment(comment) }
+    }
+  end
+
+  def format_comment(comment)
+    {
+      author: comment.user.name,
+      coment: comment.text
+    }
   end
 end
