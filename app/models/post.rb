@@ -2,5 +2,6 @@
 
 class Post < ApplicationRecord
   validates_presence_of :text
-  has_many :comment
+  has_many :comments, dependent: :destroy
+  belongs_to :user
 end
