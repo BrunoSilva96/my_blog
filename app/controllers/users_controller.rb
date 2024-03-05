@@ -25,7 +25,7 @@ class UsersController < ApplicationController
     params.permit(:email, :password, :name)
   end
 
-  def handle_invalid_record(e)
-    render json: { errors: e.record.errors.full_messages }, status: :unprocessable_entity
+  def handle_invalid_record(event)
+    render json: { errors: event.record.errors.full_messages }, status: :unprocessable_entity
   end
 end
