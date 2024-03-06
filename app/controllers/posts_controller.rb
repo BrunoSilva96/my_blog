@@ -32,7 +32,7 @@ class PostsController < ApplicationController
   end
 
   def update
-    @post.attributes = user_params
+    @post.attributes = post_params
     @post.save!
 
     render json: 'Post atualizado com sucesso!'
