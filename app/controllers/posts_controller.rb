@@ -32,15 +32,14 @@ class PostsController < ApplicationController
   end
 
   def update
-    if @post.update(post_params)
-      render json: @post
-    else
-      render json: 'Erro na atualização', status: 500
-    end
+    @post.attributes = user_params
+    @post.save!
+
+    render json: 'Post atualizado com sucesso!'
   end
 
   def destroy
-    @post.destroy
+    @post.destroy!
 
     render json: 'Post deletado com sucesso!'
   end
