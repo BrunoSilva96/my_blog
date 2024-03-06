@@ -39,9 +39,12 @@ class PostsController < ApplicationController
   end
 
   def destroy
-    @post.destroy!
-
-    render json: 'Post deletado com sucesso!'
+    if @post.user_id === current_user.id
+      @post.destroy!
+      render json: 'Post deletado com sucesso!'
+    else
+      render json: 'Você não tem permissão para deletar esse post!'
+    end
   end
 
   private
