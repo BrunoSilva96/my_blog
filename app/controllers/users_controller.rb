@@ -3,7 +3,7 @@
 class UsersController < ApplicationController
   rescue_from ActiveRecord::RecordInvalid, with: :handle_invalid_record
   skip_before_action :authorized, only: [:create]
-  before_action :load_user, only: %i[update]
+  before_action :load_user, only: %i[update destroy]
 
   def create
     user = User.create!(user_params)
