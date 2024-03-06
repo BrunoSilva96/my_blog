@@ -5,7 +5,7 @@ Rails.application.routes.draw do
 
   resources :comments, only: %i[create]
 
-  resources :users, only: %i[create]
+  resources :users, only: %i[create update destroy]
   get '/me', to: 'users#me'
   post '/auth/login', to: 'auth#login'
 

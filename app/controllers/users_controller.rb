@@ -3,6 +3,7 @@
 class UsersController < ApplicationController
   rescue_from ActiveRecord::RecordInvalid, with: :handle_invalid_record
   skip_before_action :authorized, only: [:create]
+  before_action :load_user, only: %i[update]
 
   def create
     user = User.create!(user_params)
@@ -19,7 +20,20 @@ class UsersController < ApplicationController
     render json: current_user, status: :ok
   end
 
+  def update
+    @user.attributes = user_params
+    @user.save!
+  end
+
+  def destroy
+    @user.destroy!
+  end
+
   private
+
+  def load_user
+    @user = User.find(params[:id])
+  end
 
   def user_params
     params.permit(:email, :password, :name)
