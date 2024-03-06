@@ -3,7 +3,7 @@
 Rails.application.routes.draw do
   resources :posts, only: %i[index create update destroy show]
 
-  resources :comments, only: %i[create]
+  resources :comments, only: %i[create update destroy]
 
   resources :users, only: %i[create update destroy]
   get '/me', to: 'users#me'
