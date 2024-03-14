@@ -2,6 +2,7 @@
 
 class CommentsController < ApplicationController
   before_action :set_comment, only: %i[update destroy]
+  before_action :load_post, only: %i[destroy]
 
   def create
     @comment = Comment.new(comment_params.merge(user_id: current_user&.id))
@@ -19,7 +20,8 @@ class CommentsController < ApplicationController
   end
 
   def destroy
-    if @comment.user_id === current_user.id
+    if @comment.user_id === current_user.id || @current_post.user_id === current_user.id
+
       @comment.destroy!
       render json: 'Comentário deletado com sucesso!'
     else
@@ -31,6 +33,10 @@ class CommentsController < ApplicationController
 
   def set_comment
     @comment = Comment.find(params[:id])
+  end
+
+  def load_post
+    @current_post = Post.find(@comment.post_id)
   end
 
   def comment_params
