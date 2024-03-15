@@ -13,10 +13,14 @@ class CommentsController < ApplicationController
   end
 
   def update
-    @comment.attributes = comment_params
-    @comment.save!
+    if @comment.user_id === current_user.id
+      @comment.attributes = comment_params
+      @comment.save!
 
-    render json: 'Comentário atualizado com sucesso!'
+      render json: 'Comentário atualizado com sucesso!'
+    else
+      render json: 'Você não tem permissão para atualizar esse comentário.'
+    end
   end
 
   def destroy
