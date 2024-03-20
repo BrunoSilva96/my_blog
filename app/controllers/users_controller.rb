@@ -40,6 +40,9 @@ class UsersController < ApplicationController
 
   def load_user
     @user = User.find(params[:id])
+    return if @user
+
+    render json: { error: 'Usuário não encontrado' }, status: :not_found
   end
 
   def user_params

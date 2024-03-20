@@ -53,7 +53,10 @@ class PostsController < ApplicationController
   private
 
   def set_post
-    @post = Post.find(params[:id])
+    @post = Post.find_by_id(params[:id])
+    return if @post
+
+    render json: { error: 'Post não encontrado' }, status: :not_found
   end
 
   def post_params

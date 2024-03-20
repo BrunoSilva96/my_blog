@@ -37,10 +37,16 @@ class CommentsController < ApplicationController
 
   def set_comment
     @comment = Comment.find(params[:id])
+    return if @comment
+
+    render json: { error: 'Comentário não encontrado' }, status: :not_found
   end
 
   def load_post
     @current_post = Post.find(@comment.post_id)
+    return if @current_post
+
+    render json: { error: 'Post não encontrado' }, status: :not_found
   end
 
   def comment_params
