@@ -2,6 +2,11 @@
 
 FactoryBot.define do
   factory :post do
-    post_text { 'MyText' }
+    text { Faker::Lorem.paragraph }
+    user
+
+    trait :with_comments do
+      comments { create(:comment, :with_comments) }
+    end
   end
 end
