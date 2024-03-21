@@ -44,7 +44,6 @@ group :development, :test do
   gem 'factory_bot_rails'
   gem 'faker'
   gem 'pry-rails'
-  gem 'rspec', '~> 3.4'
   gem 'rspec-rails', '~> 4.0.0'
   gem 'rubocop', require: false
   gem 'shoulda-matchers', '~> 6.1'
