@@ -45,6 +45,7 @@ group :development, :test do
   gem 'faker'
   gem 'pry-rails'
   gem 'rspec', '~> 3.4'
+  gem 'rspec-rails', '~> 4.0.0'
   gem 'rubocop', require: false
   gem 'shoulda-matchers', '~> 6.1'
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
