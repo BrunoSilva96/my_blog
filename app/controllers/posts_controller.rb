@@ -23,12 +23,15 @@ class PostsController < ApplicationController
   def create
     @post = Post.new(post_params.merge(user_id: current_user&.id))
 
-    return unless @post.save
-
-    render json: {
-      Author: current_user.name,
-      Post: PostSerializer.new(@post)
-    }, status: :created
+    if @post.save
+      render json: {
+        id: @post.id,
+        Author: current_user.name,
+        Post: PostSerializer.new(@post)
+      }, status: :created
+    else
+      render json: { error: @post.errors.full_messages }, status: :unprocessable_entity
+    end
   end
 
   def update
