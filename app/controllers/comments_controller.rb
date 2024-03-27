@@ -9,7 +9,7 @@ class CommentsController < ApplicationController
 
     return unless @comment.save
 
-    render json: @comment
+    render json: @comment, status: :created
   end
 
   def update
