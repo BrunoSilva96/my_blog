@@ -35,12 +35,14 @@ class PostsController < ApplicationController
   end
 
   def update
-    if @post.user_id === current_user.id
-      @post.attributes = post_params
-      @post.save!
-      render json: 'Post atualizado com sucesso!'
+    if @post.user_id == current_user.id
+      if @post.update(post_params)
+        render json: 'Post atualizado com sucesso!'
+      else
+        render json: @post.errors.full_messages, status: :unprocessable_entity
+      end
     else
-      render json: 'Você não tem permissão para atualizar esse post!'
+      render json: 'Você não tem permissão para atualizar esse post!', status: :unprocessable_entity
     end
   end
 
