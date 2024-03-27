@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe '/users', type: :request do
@@ -23,56 +25,44 @@ RSpec.describe '/users', type: :request do
     end
   end
 
-  describe 'PUT /users/:id' do
+  describe 'Only authenticated' do
     let(:user) { create(:user) }
+    let(:headers) { { 'Content-Type' => 'application/json', 'Accept' => 'application/json' } }
 
-    it 'Update logged user' do
+    before do
       post '/auth/login', params: { email: user.email, password: user.password }
       expect(response).to have_http_status(202)
       token = JSON.parse(response.body)['token']
-
-      new_attributes = { name: 'UserNewName' }
-
-      headers = { 'Authorization': "Bearer #{token}", 'Content-Type': 'application/json',
-                  'Accept': 'application/json' }
-
-      put("/users/#{user.id}", params: new_attributes.to_json, headers:)
-
-      expect(response).to have_http_status(200)
-      expect(user.reload.name).to eq('UserNewName')
+      headers['Authorization'] = "Bearer #{token}"
     end
+    context 'PUT /user/:id' do
+      it 'Update logged user' do
+        new_attributes = { name: 'UserNewName' }
 
-    it 'Invalid params to update user' do
-      post '/auth/login', params: { email: user.email, password: user.password }
-      expect(response).to have_http_status(202)
-      token = JSON.parse(response.body)['token']
+        put("/users/#{user.id}", params: new_attributes.to_json, headers:)
 
-      invalid_attributes = { name: '' }
+        expect(response).to have_http_status(200)
+        expect(user.reload.name).to eq('UserNewName')
+      end
 
-      headers = { 'Authorization': "Bearer #{token}", 'Content-Type': 'application/json',
-                  'Accept': 'application/json' }
+      it 'Invalid params to update user' do
+        invalid_attributes = { name: '' }
 
-      put("/users/#{user.id}", params: invalid_attributes.to_json, headers:)
+        put("/users/#{user.id}", params: invalid_attributes.to_json, headers:)
 
-      expect(response).to have_http_status(422)
-      expect(JSON.parse(response.body)).to include('errors')
-    end
-  end
+        expect(response).to have_http_status(422)
+        expect(JSON.parse(response.body)).to include('errors')
+      end
 
-  context 'DELETE /users/:id' do
-    let(:user) { create(:user) }
-    it 'Delete user logged' do
-      post '/auth/login', params: { email: user.email, password: user.password }
-      expect(response).to have_http_status(202)
-      token = JSON.parse(response.body)['token']
+      context 'DELETE /users/:id' do
+        it 'Delete user logged' do
+          delete("/users/#{user.id}", headers:)
 
-      headers = { 'Authorization': "Bearer #{token}", 'Content-Type': 'application/json', 'Accept': 'application/json' }
+          expect(response).to have_http_status(204)
 
-      delete("/users/#{user.id}", headers:)
-
-      expect(response).to have_http_status(204)
-
-      expect(User.exists?(user.id)).to be_falsey
+          expect(User.exists?(user.id)).to be_falsey
+        end
+      end
     end
   end
 end
