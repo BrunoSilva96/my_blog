@@ -7,9 +7,14 @@ class CommentsController < ApplicationController
   def create
     @comment = Comment.new(comment_params.merge(user_id: current_user&.id))
 
-    return unless @comment.save
-
-    render json: @comment, status: :created
+    if @comment.save
+      render json: {
+        id: @comment.id,
+        Comment: @comment
+      }, status: :created
+    else
+      render json: { error: @comment.errors.full_messages }, status: :unprocessable_entity
+    end
   end
 
   def update

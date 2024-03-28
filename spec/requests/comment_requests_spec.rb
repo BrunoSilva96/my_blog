@@ -27,8 +27,37 @@ RSpec.describe '/comments', type: :request do
              params: { comment: { text: comment_params[:text], user_id: user.id, post_id: @id_post } }.to_json, headers:)
 
         expect(response).to have_http_status(201)
-
         expect(Comment.count).to eq(1)
+      end
+
+      it 'does not create a new comment' do
+        comment_params = { text: '' }
+
+        post(comments_path,
+             params: { comment: { text: comment_params[:text], user_id: user.id, post_id: @id_post } }.to_json, headers:)
+
+        expect(response).to have_http_status(422)
+        expect(Comment.count).to eq(0)
+      end
+    end
+  end
+
+  describe 'PUT /coments/:id' do
+    context 'update comments' do
+      it 'update comment with valid params' do
+        comment_params = FactoryBot.attributes_for(:comment)
+        post(comments_path,
+             params: { comment: { text: comment_params[:text], user_id: user.id, post_id: @id_post } }.to_json, headers:)
+
+        comment_params_update = 'New comment after update'
+
+        comment_id = JSON.parse(response.body)['id']
+
+        put("/comments/#{comment_id}",
+            params: { comment: { text: comment_params_update, user_id: user.id, post_id: @id_post } }.to_json, headers:)
+
+        expect(response).to have_http_status(200)
+        expect(Comment.find(comment_id).text).to eq('New comment after update')
       end
     end
   end
