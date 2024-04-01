@@ -26,7 +26,7 @@ RSpec.describe '/users', type: :request do
   end
 
   describe 'Only authenticated' do
-    let(:user) { create(:user) }
+    let!(:user) { create(:user) }
     let(:headers) { { 'Content-Type' => 'application/json', 'Accept' => 'application/json' } }
 
     before do
@@ -61,6 +61,24 @@ RSpec.describe '/users', type: :request do
           expect(response).to have_http_status(204)
 
           expect(User.exists?(user.id)).to be_falsey
+        end
+      end
+    end
+
+    describe 'unauthenticated user' do
+      context 'trying to update another user' do
+        it 'user unauthorized' do
+          user_params_2 = FactoryBot.attributes_for(:user)
+
+          post users_path, params: { user: user_params_2 }
+          user_id = JSON.parse(response.body)['id']
+          expect(response).to have_http_status(201)
+
+          unauthorized_attributes = 'NewNameUnauthorized'
+
+          put("/users/#{user_id}", params: unauthorized_attributes.to_json, headers:)
+
+          expect(response).to have_http_status(401)
         end
       end
     end
