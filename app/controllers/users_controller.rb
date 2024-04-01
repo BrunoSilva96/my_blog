@@ -11,6 +11,7 @@ class UsersController < ApplicationController
     @token = encode_token(user_id: user.id)
 
     render json: {
+      id: user.id,
       user: UserSerializer.new(user),
       token: @token
     }, status: :created
@@ -25,15 +26,19 @@ class UsersController < ApplicationController
       @user.attributes = user_params
       @user.save!
       render json: 'Usuário atualizado com sucesso!'
-
     else
-      render json: 'Você não tem permissão para atualizar esse usuário!'
-
+      render json: 'Você não tem permissão para atualizar esse usuário!', status: :unauthorized
     end
   end
 
   def destroy
-    @user.destroy!
+    if @user.id === current_user.id
+
+      @user.destroy!
+    else
+      render json: 'Você não tem permissão para deletar esse usuário!', status: :unauthorized
+
+    end
   end
 
   private
