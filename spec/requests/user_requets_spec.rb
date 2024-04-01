@@ -59,15 +59,14 @@ RSpec.describe '/users', type: :request do
           delete("/users/#{user.id}", headers:)
 
           expect(response).to have_http_status(204)
-
           expect(User.exists?(user.id)).to be_falsey
         end
       end
     end
 
     describe 'unauthenticated user' do
-      context 'trying to update another user' do
-        it 'user unauthorized' do
+      context 'user unauthorized' do
+        it 'trying to update another user' do
           user_params_2 = FactoryBot.attributes_for(:user)
 
           post users_path, params: { user: user_params_2 }
@@ -79,6 +78,19 @@ RSpec.describe '/users', type: :request do
           put("/users/#{user_id}", params: unauthorized_attributes.to_json, headers:)
 
           expect(response).to have_http_status(401)
+        end
+
+        it 'trying to delete another user' do
+          user_params_2 = FactoryBot.attributes_for(:user)
+
+          post users_path, params: { user: user_params_2 }
+          user_id = JSON.parse(response.body)['id']
+          expect(response).to have_http_status(201)
+
+          delete("/users/#{user_id}", headers:)
+
+          expect(response).to have_http_status(401)
+          expect(User.exists?(user.id)).to be_truthy
         end
       end
     end
