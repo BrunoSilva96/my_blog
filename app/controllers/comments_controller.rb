@@ -18,13 +18,14 @@ class CommentsController < ApplicationController
   end
 
   def update
-    if @comment.user_id === current_user.id
-      @comment.attributes = comment_params
-      @comment.save!
-
-      render json: 'Comentário atualizado com sucesso!'
+    if @comment.user_id == current_user.id
+      if @comment.update(comment_params)
+        render json: 'Comentário atualizado com sucesso!'
+      else
+        render json: @comment.errors.full_messages, status: :unprocessable_entity
+      end
     else
-      render json: 'Você não tem permissão para atualizar esse comentário.'
+      render json: 'Você não tem permissão para atualizar esse comentário!', status: :unprocessable_entity
     end
   end
 
